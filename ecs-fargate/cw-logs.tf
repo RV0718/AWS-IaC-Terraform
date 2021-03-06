@@ -1,6 +1,6 @@
 # Set up CloudWatch group and log stream and retain logs for 30 days
 resource "aws_cloudwatch_log_group" "cw_log_group" {
-  name              = "/ecs/cb-app"
+  name              = "/ecs/app"
   retention_in_days = 30
 
   tags = {
@@ -10,6 +10,6 @@ resource "aws_cloudwatch_log_group" "cw_log_group" {
 }
 
 resource "aws_cloudwatch_log_stream" "cw_log_stream" {
-  name           = "cb-log-stream"
+  name           = "app-log-stream"
   log_group_name = aws_cloudwatch_log_group.cw_log_group.name
 }
