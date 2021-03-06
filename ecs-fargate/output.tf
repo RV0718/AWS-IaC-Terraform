@@ -1,19 +1,23 @@
 output "vpc_id" {
-  value = aws_vpc.vpc.id
+  value = aws_vpc.main.id
 }
 
 output "my_igw_id" {
-  value = aws_internet_gateway.my_igw.id
+  value = aws_internet_gateway.main.id
 }
 
 output "my_rt_id" {
-  value = aws_route_table.my_rt.id
+  value = aws_route_table.main.id
 }
 
 output "my_fargate_cluster" {
-  value = aws_ecs_cluster.ecs_fargate_cluster.id
+  value = aws_ecs_cluster.main.id
 }
 
-# output "aws_ecs_task_definition_public_id" {
-#   value = aws_ecs_task_definition.ecs_fargate_td.
-# }
+output "aws_alb_target_group_arn" {
+  value = aws_alb_target_group.main.arn
+}
+
+output "alb_hostname" {
+  value = aws_alb.main.dns_name
+}
