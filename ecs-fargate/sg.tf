@@ -26,7 +26,7 @@ resource "aws_security_group" "ecs_task" {
 }
 
 resource "aws_security_group" "alb" {
-  name   = "${var.name}-sg-alb-${var.environment}"
+  name   = "${var.name}-sg-alb-${var.environment}-alb_to_ecs"
   vpc_id = aws_vpc.main.id
 
   ingress {
@@ -37,6 +37,13 @@ resource "aws_security_group" "alb" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
+  # ingress {
+  #   protocol         = "tcp"
+  #   from_port        = 8080
+  #   to_port          = 8080
+  #   cidr_blocks      = ["0.0.0.0/0"]
+  #   ipv6_cidr_blocks = ["::/0"]
+  # }
   # ingress {
   #   protocol         = "tcp"
   #   from_port        = 443
@@ -54,7 +61,7 @@ resource "aws_security_group" "alb" {
   }
 
   tags = {
-    Name        = "${var.name}-sg-alb-${var.environment}"
+    Name        = "${var.name}-sg-alb-${var.environment}-alb_to_ecs"
     Environment = var.environment
   }
 }

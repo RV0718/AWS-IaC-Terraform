@@ -1,13 +1,15 @@
 resource "aws_appautoscaling_target" "target" {
+  #name               = "${var.name}-${var.environment}-scaling-target-policy"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
   scalable_dimension = "ecs:service:DesiredCount"
+  #role_arn           = aws_iam_role.ecs_auto_scale_role.arn
   min_capacity = var.target_min_capacity
   max_capacity = var.target_max_capacity
 }
 
 resource "aws_appautoscaling_policy" "up" {
-  name               = "${var.name}-scaling-up-policy-${var.environment}"
+  name               = "${var.name}-${var.environment}-scaling-up-policy"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -27,7 +29,7 @@ resource "aws_appautoscaling_policy" "up" {
 }
 
 resource "aws_appautoscaling_policy" "down" {
-  name               = "${var.name}-scaling-down-policy-${var.environment}"
+  name               = "${var.name}-${var.environment}-scaling-down-policy"
   service_namespace  = "ecs"
   resource_id        = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -47,7 +49,7 @@ resource "aws_appautoscaling_policy" "down" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
-  alarm_name          = "${var.name}-cb_cpu_utilization_high-${var.environment}"
+  alarm_name          = "${var.name}-${var.environment}-cb_cpu_utilization_high"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -65,14 +67,14 @@ resource "aws_cloudwatch_metric_alarm" "service_cpu_high" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "service_cpu_low" {
-  alarm_name          = "${var.name}-cb_cpu_utilization_low-${var.environment}"
+  alarm_name          = "${var.name}-${var.environment}-cb_cpu_utilization_low"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "60"
   statistic           = "Average"
-  threshold           = "40"
+  threshold           = "10"
 
   dimensions = {
     ClusterName = aws_ecs_cluster.main.name

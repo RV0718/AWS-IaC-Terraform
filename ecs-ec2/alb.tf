@@ -1,25 +1,26 @@
 resource "aws_alb" "main" {
-  name               = "${var.name}-alb-${var.environment}"
+  name               = "${var.name}-${var.environment}"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = aws_security_group.alb.*.id
+  security_groups    = aws_security_group.alb_to_ecs.*.id
   subnets            = aws_subnet.public_subnet.*.id
 
   enable_deletion_protection = false
 
   tags = {
-    Name        = "${var.name}-alb-${var.environment}"
+    Name        = "${var.name}-${var.environment}"
     Environment = var.environment
   }
 }
 
 resource "aws_alb_target_group" "main" {
-  name        = "${var.name}-tg-${var.environment}"
-  port        = 80
+  name        = "${var.name}-${var.environment}-alb-target-grp"
+  port        = var.container_port
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-  slow_start  = 30
+  target_type = "instance"
+
+
 
   #TODO need to correct it later
 
@@ -34,7 +35,7 @@ resource "aws_alb_target_group" "main" {
   }
 
   tags = {
-    Name        = "${var.name}-tg-${var.environment}"
+    Name        = "${var.name}-${var.environment}"
     Environment = var.environment
   }
 }
@@ -42,17 +43,17 @@ resource "aws_alb_target_group" "main" {
 # Redirect/forward to https listener
 resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.main.id
-  port              = 80
+  port              = var.container_port
   protocol          = "HTTP"
 
   default_action {
     target_group_arn = aws_alb_target_group.main.arn
     type             = "forward"
 
-    redirect {
-      port        = 443
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
+    # redirect {
+    #   port        = 443
+    #   protocol    = "HTTPS"
+    #   status_code = "HTTP_301"
+    # }
   }
 }
